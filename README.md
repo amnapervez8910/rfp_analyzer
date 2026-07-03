@@ -84,16 +84,16 @@ streamlit run app.py
 
 ## 📊 Scoring System
 
-```
-✅ FOUND = 1 point
-⚠️ ACTION REQUIRED = 0.5 point
-❌ NOT FOUND = 0 point
 
-Decision Rules:
-- Score >= 80% and all Finance items GO → ✅ GO
-- Score 60-79% or Finance items flagged → ⚠️ MAYBE
-- Score < 60% → ❌ NO-GO
-```
+---
+
+### Final Decision Rules
+
+| Condition | Decision |
+|-----------|----------|
+| Overall score ≥ 80% AND every Finance-team item = GO | ✅ **GO** |
+| Any single flag exists (e.g., insurance over cap, non-standard payment terms) even with a high overall score | ⚠️ **MAYBE** |
+| Overall score < 60% | ❌ **NO-GO** |
 
 ---
 
