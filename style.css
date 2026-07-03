@@ -1,270 +1,389 @@
-/* ============================================
-   MAIN APP STYLING
-   ============================================ */
+/* =====================================================
+   STYLESHEET FOR AI PROPOSAL CAPTURE SYSTEM
+   ===================================================== */
 
-.stApp {
-    background: #0a0a0a;
-    color: #e6e6e6;
+/* MAIN APP STYLES */
+.stApp { 
+    background: #0a0a0a; 
+}
+.main { 
+    padding: 2rem; 
+    background: #0a0a0a; 
 }
 
-.main {
-    padding: 2rem;
-    background: #0a0a0a;
-}
-
-/* ============================================
-   GRADIENT HEADER
-   ============================================ */
-
+/* HEADER STYLES */
 .gradient-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 2.5rem;
-    border-radius: 12px;
-    text-align: center;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    padding: 2rem;
+    border-radius: 20px;
+    color: white;
     margin-bottom: 2rem;
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    box-shadow: 0 10px 30px rgba(15, 52, 96, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .gradient-header h1 {
-    color: white;
-    font-size: 2.8rem;
-    margin: 0;
+    font-size: 2.5rem;
     font-weight: 700;
-    letter-spacing: -0.5px;
+    margin: 0;
+    color: #ffffff;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 
 .gradient-header p {
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1.2rem;
+    font-size: 1.1rem;
+    opacity: 0.8;
     margin-top: 0.5rem;
-    font-weight: 300;
-    letter-spacing: 1px;
+    color: #a8b2d1;
 }
 
-/* ============================================
-   INFO CARDS
-   ============================================ */
-
-.info-card {
-    background: #1a1a2e;
-    padding: 1.8rem 1.5rem;
-    border-radius: 12px;
-    text-align: center;
-    border: 1px solid #2a2a4a;
+/* BUTTON STYLES */
+.stButton > button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 0.75rem 2.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.1rem;
     transition: all 0.3s ease;
-    margin-bottom: 1rem;
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    width: 100%;
+}
+
+.stButton > button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+/* CARD STYLES */
+.card {
+    background: linear-gradient(145deg, #1a1a2e, #16213e);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    margin: 1rem 0;
+    border-left: 5px solid #667eea;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.success-box {
+    background: linear-gradient(135deg, #00b09b, #1a7a6e);
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    color: white;
+    font-weight: 600;
+    margin: 1rem 0;
+    box-shadow: 0 5px 15px rgba(0, 176, 155, 0.2);
+    border: 1px solid rgba(0, 176, 155, 0.3);
+}
+
+/* INFO CARDS */
+.info-card {
+    background: linear-gradient(145deg, #1a1a2e, #16213e);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+    margin: 0.5rem 0;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.info-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
 }
 
 .info-card:hover {
     transform: translateY(-5px);
-    border-color: #667eea;
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    border-color: rgba(102, 126, 234, 0.3);
 }
 
 .card-icon {
-    font-size: 2.8rem;
-    display: block;
+    font-size: 2.2rem;
     margin-bottom: 0.5rem;
+    display: block;
+    line-height: 1.2;
 }
 
 .info-card h3 {
-    color: #e6e6e6;
-    margin: 0.5rem 0;
+    color: #ffffff;
     font-size: 1.1rem;
+    margin: 0.5rem 0;
     font-weight: 600;
+    letter-spacing: 0.5px;
 }
 
 .info-card p {
-    color: #8892b0;
+    color: #8892b0 !important;
+    font-size: 0.85rem;
     margin: 0;
-    font-size: 0.9rem;
+    opacity: 0.8;
 }
 
-.card-deliverables {
-    border-left: 4px solid #4CAF50;
-    border-left-color: #4CAF50;
+.card-deliverables::before { 
+    background: linear-gradient(90deg, #667eea, #764ba2); 
+}
+.card-evaluation::before { 
+    background: linear-gradient(90deg, #f093fb, #f5576c); 
+}
+.card-compliance::before { 
+    background: linear-gradient(90deg, #4facfe, #00f2fe); 
+}
+.card-decision::before { 
+    background: linear-gradient(90deg, #43e97b, #38f9d7); 
 }
 
-.card-evaluation {
-    border-left: 4px solid #FF9800;
-    border-left-color: #FF9800;
+/* STATUS BADGES */
+.status-found {
+    display: inline-block;
+    background: #00d4aa;
+    color: #0a0a0a !important;
+    font-weight: 700;
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    letter-spacing: 0.3px;
+    min-width: 100px;
+    text-align: center;
 }
 
-.card-compliance {
-    border-left: 4px solid #2196F3;
-    border-left-color: #2196F3;
+.status-not-found {
+    display: inline-block;
+    background: #ff6b6b;
+    color: #0a0a0a !important;
+    font-weight: 700;
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    letter-spacing: 0.3px;
+    min-width: 100px;
+    text-align: center;
 }
 
-.card-decision {
-    border-left: 4px solid #9C27B0;
-    border-left-color: #9C27B0;
+.status-action {
+    display: inline-block;
+    background: #fbbf24;
+    color: #0a0a0a !important;
+    font-weight: 700;
+    padding: 4px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    letter-spacing: 0.3px;
+    min-width: 100px;
+    text-align: center;
 }
 
-/* ============================================
-   PROCESSING STATUS
-   ============================================ */
-
-.processing-status {
-    background: #1a1a2e;
-    padding: 2rem;
+/* TABLE STYLES */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    background: transparent;
     border-radius: 12px;
-    margin: 2rem 0;
-    border: 1px solid #2a2a4a;
+    overflow: hidden;
+}
+
+th {
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    color: #a8b2d1;
+    padding: 14px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+td {
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: #c8d0e0;
+    font-size: 0.9rem;
+    vertical-align: middle;
+}
+
+td:first-child { 
+    font-weight: 500; 
+    color: #e8ecf5; 
+}
+tr:nth-child(even) { 
+    background: rgba(255, 255, 255, 0.02); 
+}
+tr:hover { 
+    background: rgba(102, 126, 234, 0.06); 
+}
+
+/* PROCESSING STATUS */
+.processing-status {
+    background: linear-gradient(145deg, #1a1a2e, #16213e);
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    margin: 1rem 0;
 }
 
 .processing-status h3 {
-    color: #e6e6e6;
-    margin-top: 0;
+    color: #a8b2d1;
+    font-weight: 400;
+    margin: 0;
+}
+
+.processing-status .highlight {
+    color: #667eea;
+    font-weight: 600;
 }
 
 .step-indicator {
     display: flex;
-    gap: 1rem;
-    margin: 1.5rem 0;
+    justify-content: center;
+    gap: 2rem;
+    margin: 1rem 0;
     flex-wrap: wrap;
 }
 
 .step {
-    flex: 1;
-    min-width: 120px;
-    padding: 0.8rem 1rem;
-    background: #0d0d1a;
-    border-radius: 8px;
-    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     color: #8892b0;
-    opacity: 0.4;
-    transition: all 0.3s ease;
-    border: 1px solid transparent;
+    font-size: 0.9rem;
+    padding: 0.5rem 1.2rem;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .step.active {
-    opacity: 1;
-    background: #1a1a3e;
-    border: 1px solid #667eea;
-    color: #e6e6e6;
-    box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+    color: #667eea;
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
 }
 
 .step.done {
-    opacity: 1;
-    color: #4CAF50;
-    border-color: #4CAF50;
-}
-
-.step-icon {
-    display: block;
-    font-size: 1.5rem;
-    margin-bottom: 0.3rem;
-}
-
-.highlight {
     color: #00d4aa;
+    border-color: #00d4aa;
+    background: rgba(0, 212, 170, 0.1);
 }
 
-/* ============================================
-   STATUS COLORS
-   ============================================ */
-
-.status-go {
-    color: #4CAF50;
-    font-weight: bold;
-    font-size: 1.2rem;
+.step-icon { 
+    font-size: 1.2rem; 
 }
 
-.status-maybe {
-    color: #FF9800;
-    font-weight: bold;
-    font-size: 1.2rem;
+/* STREAMLIT COMPONENT OVERRIDES */
+.stProgress > div > div > div > div {
+    background: linear-gradient(90deg, #667eea, #764ba2) !important;
 }
 
-.status-no-go {
-    color: #f44336;
-    font-weight: bold;
-    font-size: 1.2rem;
+.stSpinner > div {
+    border-color: #667eea transparent #667eea transparent !important;
 }
 
-/* ============================================
-   MARKDOWN TABLES
-   ============================================ */
-
-.stMarkdown table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #1a1a2e;
-    border-radius: 8px;
-    overflow: hidden;
+.stMarkdown { 
+    color: #c8d0e0; 
 }
 
-.stMarkdown th {
-    background: #2a2a4a;
-    color: #e6e6e6;
-    padding: 0.8rem;
-    text-align: left;
-    font-weight: 600;
+.stAlert { 
+    background: rgba(26, 26, 46, 0.9) !important; 
+    border-color: rgba(255, 255, 255, 0.05) !important; 
+    color: #c8d0e0 !important; 
 }
 
-.stMarkdown td {
-    padding: 0.8rem;
-    border-bottom: 1px solid #2a2a4a;
-    color: #d1d5db;
+.stAlert > div { 
+    color: #c8d0e0 !important; 
 }
 
-.stMarkdown tr:hover {
-    background: #222244;
+.stAlert svg { 
+    fill: #667eea !important; 
 }
 
-/* ============================================
-   BUTTONS
-   ============================================ */
-
-.stButton button {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    padding: 0.8rem 2rem;
-    border-radius: 8px;
-    font-weight: 600;
-    transition: all 0.3s ease;
+.stFileUploader > div > div {
+    background: rgba(26, 26, 46, 0.8) !important;
+    border: 2px dashed #4a6fa5 !important;
+    border-radius: 15px !important;
+    padding: 2rem !important;
 }
 
-.stButton button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+.stFileUploader > div > div:hover {
+    border-color: #667eea !important;
+    background: rgba(26, 26, 46, 1) !important;
 }
 
-/* ============================================
-   FILE UPLOADER
-   ============================================ */
-
-.stFileUploader {
-    background: #1a1a2e;
-    border: 2px dashed #2a2a4a;
-    border-radius: 12px;
-    padding: 2rem;
+.stFileUploader label { 
+    color: #a8b2d1 !important; 
 }
 
-.stFileUploader:hover {
-    border-color: #667eea;
+/* TYPOGRAPHY */
+h1, h2, h3, h4, h5, h6 { 
+    color: #ffffff !important; 
+}
+hr { 
+    border-color: rgba(255, 255, 255, 0.05) !important; 
 }
 
-/* ============================================
-   RESPONSIVE DESIGN
-   ============================================ */
+/* SCROLLBAR STYLES */
+::-webkit-scrollbar { 
+    width: 10px; 
+}
+::-webkit-scrollbar-track { 
+    background: #0a0a0a; 
+}
+::-webkit-scrollbar-thumb { 
+    background: linear-gradient(135deg, #667eea, #764ba2); 
+    border-radius: 10px; 
+}
+::-webkit-scrollbar-thumb:hover { 
+    background: linear-gradient(135deg, #764ba2, #667eea); 
+}
+::selection { 
+    background: #667eea; 
+    color: white; 
+}
 
+/* DOWNLOAD BUTTON */
+.stDownloadButton > button {
+    background: linear-gradient(135deg, #1a1a2e, #16213e) !important;
+    color: #a8b2d1 !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+.stDownloadButton > button:hover {
+    background: linear-gradient(135deg, #16213e, #1a1a2e) !important;
+    border-color: #667eea !important;
+    color: white !important;
+}
+
+/* RESPONSIVE DESIGN */
 @media (max-width: 768px) {
-    .gradient-header h1 {
-        font-size: 1.8rem;
+    .gradient-header h1 { 
+        font-size: 1.8rem; 
     }
-    
-    .gradient-header p {
-        font-size: 1rem;
+    .upload-box { 
+        padding: 1.5rem; 
     }
-    
-    .step-indicator {
-        flex-direction: column;
+    .info-card { 
+        padding: 1rem; 
     }
-    
-    .step {
-        min-width: auto;
+    .card-icon { 
+        font-size: 1.8rem; 
+    }
+    .step-indicator { 
+        gap: 0.5rem; 
+    }
+    .step { 
+        font-size: 0.75rem; 
+        padding: 0.3rem 0.8rem; 
     }
 }
