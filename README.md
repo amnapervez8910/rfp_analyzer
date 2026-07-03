@@ -1,44 +1,106 @@
+# 📄 AI Proposal Capture System
 
-📄 RFP AI Analyzer
+A smart RFP analysis tool that uses Google Gemini AI to evaluate proposals and give GO/NO-GO decisions.
 
-AI-powered tool that analyzes RFP (Request for Proposal) PDFs and gives GO/NO-GO decision with compliance scores.
+---
 
-Quick Setup (3 Steps)
-
-1️⃣ Install Requirements
+## 📦 Installation
 
 ```bash
-pip install streamlit pypdf google-generativeai 
+pip install streamlit
+pip install pypdf
+pip install google-generativeai
 ```
 
-2️⃣ Get API Key
+---
 
-· Go to Google AI Studio
-· Create free API key
-· Paste in the code
+## 🔑 Setup API Key
+
+
+```env
+GEMINI_KEY=your_google_gemini_api_key_here
 ```
 
-3️⃣ Run App
+Get your free API key from:
+https://aistudio.google.com/app/apikey
+
+---
+
+## 🚀 Run the App
 
 ```bash
 streamlit run app.py
 ```
 
-How to Use
+---
 
-1. Upload RFP PDF
-2. Click "Analyze RFP" button
-3. Get complete report with:
-   · 📋 Deliverables list
-   · ⚖️ Evaluation criteria
-   · ✅ Compliance checklist (4 teams)
-   · 🎯 GO/NO-GO decision with scores
-
-Files Needed
+## 📁 Project Files
 
 ```
-rfp_analyzer/
-├── app.py          # Main code
-├── style.css       # Styling
+📂 proposal-capture-system/
+├── 📄 app.py          # Main application
+├── 🎨 style.css       # Custom styles  
+```
+
+---
+
+## ✨ Features
 
 ```
+✅ Upload RFP PDF documents
+✅ AI-powered analysis with Google Gemini
+✅ Finance team checklist (Payment terms, Insurance, Stability)
+✅ Legal team checklist (Eligibility, Data protection, Contracts)
+✅ Operations team checklist (Forms, Deadlines, Documents)
+✅ Technical team checklist (Scope, Requirements, Standards)
+✅ Department-wise scoring system
+✅ GO/NO-GO/MAYBE recommendations
+✅ Export reports in Markdown format
+```
+
+---
+
+## 🛠️ Tech Stack
+
+```
+- Streamlit - Web framework
+- PyPDF - PDF text extraction
+- Google Gemini AI - Document analysis
+```
+
+---
+
+## 🎯 How It Works
+
+```
+1. Upload your RFP PDF
+2. App reads and extracts text from all pages
+3. Gemini AI analyzes against comprehensive checklist
+4. Get detailed compliance report with scores
+5. Receive final GO/NO-GO decision with justification
+```
+
+---
+
+## 📊 Scoring System
+
+```
+✅ FOUND = 1 point
+⚠️ ACTION REQUIRED = 0.5 point
+❌ NOT FOUND = 0 point
+
+Decision Rules:
+- Score >= 80% and all Finance items GO → ✅ GO
+- Score 60-79% or Finance items flagged → ⚠️ MAYBE
+- Score < 60% → ❌ NO-GO
+```
+
+---
+
+## 📄 License
+
+All Rights Reserved
+
+---
+
+**Made by Amna Pervez**
