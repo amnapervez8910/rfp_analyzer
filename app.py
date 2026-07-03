@@ -5,29 +5,15 @@ import time
 from google.api_core import exceptions
 import re
 from pathlib import Path
-import os
-from dotenv import load_dotenv
-
-# =====================================================
-# LOAD ENVIRONMENT VARIABLES
-# =====================================================
-load_dotenv()
 
 # =====================================================
 # GEMINI CONFIG
 # =====================================================
 
-# Use environment variable for API key (SECURE)
-API_KEY = os.getenv("GEMINI_API_KEY")
-if not API_KEY:
-    # Fallback for testing - REMOVE IN PRODUCTION
-    API_KEY = "YOUR_API_KEY_HERE"
-    st.warning("⚠️ Using hardcoded API key. Please set GEMINI_API_KEY in .env file")
-
-genai.configure(api_key=API_KEY)
+genai.configure("GEMINI_KEY")
 
 model = genai.GenerativeModel(
-    "models/gemini-2.0-flash-exp"
+    "models/gemini-2.5-flash"
 )
 
 # =====================================================
@@ -58,50 +44,8 @@ def load_css():
         <style>
             .stApp { background: #0a0a0a; }
             .main { padding: 2rem; background: #0a0a0a; }
-            .gradient-header {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                padding: 2rem;
-                border-radius: 12px;
-                text-align: center;
-                margin-bottom: 2rem;
-            }
-            .gradient-header h1 { color: white; margin: 0; }
-            .gradient-header p { color: rgba(255,255,255,0.9); }
-            .info-card {
-                background: #1a1a2e;
-                padding: 1.5rem;
-                border-radius: 10px;
-                text-align: center;
-                border: 1px solid #2a2a4a;
-            }
-            .card-icon { font-size: 2.5rem; display: block; }
-            .info-card h3 { color: #e6e6e6; }
-            .info-card p { color: #8892b0; }
-            .processing-status {
-                background: #1a1a2e;
-                padding: 2rem;
-                border-radius: 10px;
-                margin: 2rem 0;
-            }
-            .step-indicator { display: flex; gap: 1rem; margin: 1.5rem 0; }
-            .step {
-                flex: 1;
-                padding: 0.8rem;
-                background: #0d0d1a;
-                border-radius: 6px;
-                text-align: center;
-                color: #8892b0;
-                opacity: 0.5;
-            }
-            .step.active { opacity: 1; background: #1a1a3e; border: 1px solid #667eea; color: #e6e6e6; }
-            .step.done { opacity: 1; color: #4CAF50; }
-            .highlight { color: #00d4aa; }
-            .status-go { color: #4CAF50; font-weight: bold; }
-            .status-maybe { color: #FF9800; font-weight: bold; }
-            .status-no-go { color: #f44336; font-weight: bold; }
         </style>
         """
-    return ""
 
 # Apply the CSS
 st.markdown(load_css(), unsafe_allow_html=True)
@@ -212,8 +156,8 @@ Do NOT use any generic knowledge — only what is written inside the RFP text.
 
 Every checklist item has hidden sub-criteria (listed for you below, for your
 own internal checking only — do NOT print these sub-criteria or any decision
-rules in your output, only print the final Item / Status / Explanation table
-exactly in the format shown further down).
+rules in your output, only print the final Item / Status / Decision / Explanation
+table exactly in the format shown further down).
 
 STRICT RULES:
 1. Use ONLY information present in RFP.
@@ -221,21 +165,19 @@ STRICT RULES:
 3. If information is missing write: "Not specified in RFP".
 4. Keep response concise and professional.
 5. Remove duplicate information.
-6. Check EACH item against its sub-criteria (below) before deciding status — but only output the final Item/Status/Explanation table, nothing else about the sub-criteria.
-7. Apply these exact decision rules silently, do not print them:
-   - Payment Terms: if RFP states NET30 → ✅ FOUND. If more than NET30 (NET45/60 etc) → ⚠️ ACTION REQUIRED (escalate to accounting). If not mentioned → ❌ NOT FOUND.
-   - Insurance Requirements: 
-     * If RFP states exactly $5M or less → ✅ FOUND (GO DECISION)
-     * If RFP states more than $5M → ❌ NOT FOUND (AUTOMATIC NO-GO - DISQUALIFICATION)
-     * If not mentioned → ❌ NOT FOUND (Needs clarification)
-   - All other items: ✅ FOUND only if clearly stated in RFP, ⚠️ ACTION REQUIRED if partially/ambiguously mentioned, ❌ NOT FOUND if absent.
+6. Check EACH item against its sub-criteria (below) before deciding status — but only output the final Item/Status/Decision/Explanation table, nothing else about the sub-criteria.
+7. Every row must also carry a per-item Decision of GO, NO-GO, or MAYBE, decided using these exact rules (apply silently, do not print the rules themselves):
+   - Payment Terms: if RFP states NET30 → Status ✅ FOUND, Decision GO. If more than NET30 (NET45/60 etc) → Status ⚠️ ACTION REQUIRED, Decision MAYBE (escalate to accounting). If not mentioned → Status ❌ NOT FOUND, Decision NO-GO.
+   - Insurance Requirements: if RFP states exactly $5M coverage → Status ✅ FOUND, Decision GO. If RFP requires MORE than $5M → Status ⚠️ ACTION REQUIRED, Decision NO-GO (this is a hard limit, do not mark it GO or MAYBE). If not mentioned → Status ❌ NOT FOUND, Decision NO-GO.
+   - All other items: Status ✅ FOUND → Decision GO. Status ⚠️ ACTION REQUIRED (partially/ambiguously mentioned) → Decision MAYBE. Status ❌ NOT FOUND (absent) → Decision NO-GO.
 
 Internal sub-criteria reference (for your checking only, never print):
 - Payment Terms: payment schedule, milestones, retainage, late-payment penalties.
-- Financial Stability Requirements: unaudited/audited financial statements or proof of financial stability required.
+- Financial Stability Requirements: financial statements / proof of financial stability required.
 - Insurance Requirements: required coverage amount.
 - Profitability Analysis: expected revenue vs projected cost / budget / contract value.
 - Bid Bond: bid bond or bond percentage requirement.
+- Taxes: tax ID / tax compliance / tax clearance requirement.
 - Eligibility Criteria: relevant experience, registration requirement, prior-year financial statement.
 - Capability: qualified personnel, technical know-how.
 - Quantum of Input: expected revenue generation, implementation period, insurance coverage, compliance of law.
@@ -251,7 +193,11 @@ Internal sub-criteria reference (for your checking only, never print):
 - Responsible Person: RFP Owner/Lead or point of contact identified.
 - Meeting with Ops: pre-bid meeting / site visit / conference call requirement.
 - Vendor Registration: info needed to complete registration, who is responsible.
-- Scope Alignment: does scope match SPS offerings (IAM, cybersecurity, etc).
+- Scope Alignment: SPS's actual service portfolio is Identity and Access Management (IAM), cybersecurity solutions, identity governance, access control, and related security services. Do NOT mark this as FOUND/aligned just because the RFP has a scope/description section defined. Read what the RFP's scope actually asks for and compare it word-for-word against SPS's portfolio above:
+  - ✅ FOUND only if the RFP's scope is genuinely about IAM, cybersecurity, identity governance, access control, or a closely related security discipline.
+  - ❌ NOT FOUND if the RFP's scope is about something else entirely (e.g. website search, personalization engines, general software development, marketing, construction, unrelated AI/ML products, etc.) — even if that scope is clearly and fully described in the RFP. A well-defined scope that has nothing to do with SPS's services is a NOT FOUND for alignment, not a FOUND.
+  - ⚠️ ACTION REQUIRED only if the scope is partially related or ambiguous (e.g. touches on data security or access control as one component among unrelated work).
+  In the Explanation column, never claim "aligns with SPS offerings" unless the scope actually involves IAM/cybersecurity/identity/access-control work — state plainly what the RFP's scope is and whether it overlaps with SPS's services.
 - Technical Requirements: do specs match SPS capabilities.
 - Industry Standards: reference to standards/best practices (NIST, ISO, SOC2 etc).
 - Security Requirements: data protection, encryption, access control.
@@ -288,46 +234,59 @@ List with method and weight %
 # COMPLIANCE CHECKLIST
 
 ## FINANCE TEAM
-| Item | Status | Explanation |
-|------|--------|-------------|
-| Payment Terms (NET30 rule) | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
-| Financial Stability | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
-| Insurance Requirements ($5M rule) | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
-| Profitability Analysis | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
-| Bid Bond | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
-
+| Item | Status | Decision | Explanation |
+|------|--------|----------|-------------|
+| Payment Terms (NET30 rule) | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
+| Financial Stability | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
+| Insurance Requirements ($5M rule) | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
+| Profitability Analysis | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
+| Bid Bond | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
+| Taxes | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
 
 ## LEGAL TEAM
-| Item | Status | Explanation |
-|------|--------|-------------|
-| Eligibility Criteria | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
-| Capability | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
-| Quantum of Input | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
-| Data Protection | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
-| State Registration | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
-| E-Verify | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
-| Contractual Obligations | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
+| Item | Status | Decision | Explanation |
+|------|--------|----------|-------------|
+| Eligibility Criteria | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
+| Capability | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
+| Quantum of Input | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
+| Data Protection | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
+| State Registration | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
+| E-Verify | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
+| Contractual Obligations | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
 
 ## OPERATIONS TEAM
-| Item | Status | Explanation |
-|------|--------|-------------|
-| Required Forms | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
-| Submission Deadlines | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
-| Document Compliance | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
-| Signatory Authority | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
-| Required Documents | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
-| Responsible Person | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
-| Meeting with Ops | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
-| Vendor Registration | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
+| Item | Status | Decision | Explanation |
+|------|--------|----------|-------------|
+| Required Forms | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
+| Submission Deadlines | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
+| Document Compliance | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
+| Signatory Authority | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
+| Required Documents | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
+| Responsible Person | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
+| Meeting with Ops | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
+| Vendor Registration | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
 
 ## TECHNICAL TEAM
-| Item | Status | Explanation |
-|------|--------|-------------|
-| Scope Alignment | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
-| Technical Requirements | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
-| Industry Standards | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
-| Security Requirements | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
-| Integration Needs | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | [Brief] |
+| Item | Status | Decision | Explanation |
+|------|--------|----------|-------------|
+| Scope Alignment | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
+| Technical Requirements | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
+| Industry Standards | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
+| Security Requirements | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
+| Integration Needs | ✅ FOUND / ❌ NOT FOUND / ⚠️ ACTION REQUIRED | GO / NO-GO / MAYBE | [Brief] |
+
+================================================
+
+# SCORING SUMMARY
+
+Calculate scores based on percentage of FOUND items (✅ FOUND = 1 point, ⚠️ ACTION REQUIRED = 0.5 point, ❌ NOT FOUND = 0 point) out of total items per team.
+
+Finance Score: [XX%]
+Legal Score: [XX%]
+Operations Score: [XX%]
+Technical Score: [XX%]
+
+Overall Score: [average of the four scores, XX%]
 
 ================================================
 
@@ -338,11 +297,21 @@ Capability Alignment: [Strong / Moderate / Poor]
 Financial Viability: [Viable / Needs Review / Not Viable]
 Risk Assessment: [Low / Medium / High]
 
+## FINAL RECOMMENDATION
+
+Based on the overall score AND on whether any checklist row above (especially Finance team rows: Payment Terms, Insurance Requirements) carries a NO-GO or MAYBE Decision:
+- If Score >= 80% AND every Finance row Decision = GO (no NO-GO/MAYBE anywhere, including Insurance and Payment Terms) → ✅ GO - Strongly recommend pursuing this proposal
+- If ANY issue/flag exists — a Finance row is MAYBE or NO-GO (e.g. payment terms > NET30, insurance coverage > $5M, insurance not mentioned, or Score is 60-79%) → ⚠️ MAYBE - Proceed with caution, need risk mitigation. Do NOT auto-fail the whole proposal just because one item has a problem; treat it as a flag to resolve.
+- Only if Score < 60% (overall checklist mostly missing/failing) → ❌ NO-GO - Do not pursue this proposal
+
+Final Decision: [GO / NO-GO / MAYBE]
+
 ## JUSTIFICATION
 
-[Clear 3-4 sentence explanation:
+[Clear 3-4 sentence explanation. If the decision is MAYBE, explicitly name WHICH item(s) caused it (e.g. "Insurance requirement of $10M exceeds the $5M threshold" or "Payment terms are NET60, exceeding NET30") so the reason is obvious, not generic:
+- Why this decision was made
 - Key strengths identified
-- Key risks or gaps
+- Key risks or gaps (name the specific flagged item(s) here)
 - What needs to happen next]
 
 ================================================
@@ -445,140 +414,18 @@ RFP DOCUMENT:
     st.error("❌ All retries failed. Please try again later.")
     return "Analysis failed due to rate limits. Please try again after some time."
 
-
-
-    
-
-    # =====================================================
-# REAL PYTHON-BASED SCORING
 # =====================================================
-
-STATUS_POINTS = {
-    "✅": 1.0,
-    "⚠️": 0.5,
-    "❌": 0.0,
-}
-
-TEAM_SECTION_PATTERN = re.compile(
-    r'##\s*(FINANCE TEAM|LEGAL TEAM|OPERATIONS TEAM|TECHNICAL TEAM)\s*\n(.*?)(?=\n##|\Z)',
-    re.DOTALL | re.IGNORECASE
-)
-
-ROW_STATUS_PATTERN = re.compile(r'^\|(.+?)\|\s*(✅|⚠️|❌)[^|]*\|', re.MULTILINE)
-
-
-def parse_team_rows(section_text):
-    """Return list of (item_name, status_symbol) for one team's table."""
-    rows = []
-    for match in ROW_STATUS_PATTERN.finditer(section_text):
-        item = match.group(1).strip()
-        status = match.group(2)
-        # skip the header/separator rows of the markdown table
-        if item.lower() in ("item", ""):
-            continue
-        if set(item) <= {"-", ":", " "}:
-            continue
-        rows.append((item, status))
-    return rows
-
-
-def compute_team_score(rows):
-    if not rows:
-        return None
-    total_points = sum(STATUS_POINTS.get(status, 0.0) for _, status in rows)
-    max_points = len(rows)
-    return round((total_points / max_points) * 100, 1)
-
-
-def compute_real_scores(report):
-    """
-    Parses the raw AI report text and independently computes:
-    - per-team scores
-    - overall score
-    - whether an unresolved Finance ACTION REQUIRED flag exists
-      (Payment Terms > NET30 or Insurance > $5M)
-    - the final GO / MAYBE / NO-GO decision, per the fixed rules
-    Returns a dict with everything the report needs.
-    """
-    team_scores = {}
-    finance_rows = []
-
-    for match in TEAM_SECTION_PATTERN.finditer(report):
-        team_name = match.group(1).upper()
-        section_text = match.group(2)
-        rows = parse_team_rows(section_text)
-        score = compute_team_score(rows)
-        team_scores[team_name] = score
-        if "FINANCE" in team_name:
-            finance_rows = rows
-
-    finance = team_scores.get("FINANCE TEAM")
-    legal = team_scores.get("LEGAL TEAM")
-    ops = team_scores.get("OPERATIONS TEAM")
-    tech = team_scores.get("TECHNICAL TEAM")
-
-    valid_scores = [s for s in (finance, legal, ops, tech) if s is not None]
-    overall = round(sum(valid_scores) / len(valid_scores), 1) if valid_scores else None
-
-    # Check for Insurance NO-GO condition (Insurance > $5M)
-    insurance_no_go = False
-    for item, status in finance_rows:
-        item_lower = item.lower()
-        if "insurance" in item_lower:
-            # If insurance is marked as NOT FOUND due to >$5M
-            if status == "❌" and ("more than 5" in item_lower or "exceeds" in item_lower or ">$5M" in item_lower):
-                insurance_no_go = True
-            # Also check if explanation contains >$5M
-            # We'll check the explanation text in the report too
-            if "more than 5" in item_lower or "exceeds" in item_lower:
-                insurance_no_go = True
-
-    # Check for an unresolved Finance ACTION REQUIRED flag on
-    # Payment Terms specifically (Insurance now triggers NO-GO directly)
-    finance_flag = False
-    for item, status in finance_rows:
-        item_lower = item.lower()
-        if status == "⚠️" and "payment terms" in item_lower:
-            finance_flag = True
-
-    decision = None
-    if insurance_no_go:
-        decision = "NO-GO"  # Force NO-GO if insurance > $5M
-    elif overall is not None:
-        if overall >= 80 and not finance_flag:
-            decision = "GO"
-        elif overall < 60:
-            decision = "NO-GO"
-        else:
-            decision = "MAYBE"
-
-    return {
-        "finance": finance,
-        "legal": legal,
-        "ops": ops,
-        "tech": tech,
-        "overall": overall,
-        "finance_flag": finance_flag,
-        "insurance_no_go": insurance_no_go,
-        "decision": decision,
-    }
-
-# =====================================================
-# FORMAT REPORT
+# FORMAT REPORT - FINAL WORKING VERSION
 # =====================================================
 
 def format_report(report):
-    """Format the report with clean markdown, using real computed
-    scores/decision (Fix #2) and robust section extraction (Fix #3)."""
-
-    # Compute the real, verifiable scores BEFORE any text is stripped out.
-    scores = compute_real_scores(report)
+    """Format the report with clean markdown - FINAL WORKING VERSION"""
 
     # Remove all HTML tags and junk
     report = re.sub(r'<[^>]+>', '', report)
+
     report = re.sub(r'»|›|•', '', report)
     report = re.sub(r'\*\*', '', report)
-
 
     # ============================================
     # HEADERS WITH ICONS
@@ -587,138 +434,267 @@ def format_report(report):
     report = report.replace('# DELIVERABLES', '## 📋 DELIVERABLES')
     report = report.replace('# EVALUATION CRITERIA', '## ⚖️ EVALUATION CRITERIA')
     report = report.replace('# COMPLIANCE CHECKLIST', '## ✅ COMPLIANCE CHECKLIST')
+    report = report.replace('# SCORING SUMMARY', '## 📊 SCORING SUMMARY')
     report = report.replace('# QUALIFICATION DECISION', '## 🎯 QUALIFICATION DECISION')
 
-    # ============================================
-    # QUALIFICATION DECISION - OVERRIDE WITH REAL SCORES
+    report = report.replace('## FINANCE TEAM', '### 💰 FINANCE TEAM')
+    report = report.replace('## LEGAL TEAM', '### ⚖️ LEGAL TEAM')
+    report = report.replace('## OPERATIONS TEAM', '### 📋 OPERATIONS TEAM')
+    report = report.replace('## TECHNICAL TEAM', '### 🔧 TECHNICAL TEAM')
+
+     # ============================================
+    # EXTRACT SCORES
     # ============================================
 
-    # Find and replace the qualification decision section
-    decision_pattern = r'## 🎯 QUALIFICATION DECISION.*?(?=\n##|\Z)'
-    decision_match = re.search(decision_pattern, report, re.DOTALL)
+    finance = re.search(r'Finance Score:\s*(\d+\.?\d*%)', report, re.IGNORECASE)
+    legal = re.search(r'Legal Score:\s*(\d+\.?\d*%)', report, re.IGNORECASE)
+    ops = re.search(r'Operations Score:\s*(\d+\.?\d*%)', report, re.IGNORECASE)
+    tech = re.search(r'Technical Score:\s*(\d+\.?\d*%)', report, re.IGNORECASE)
+    overall = re.search(r'Overall Score:\s*(\d+\.?\d*%)', report, re.IGNORECASE)
 
+    def get_color(score_str):
+        try:
+            num = float(score_str.replace('%', ''))
+            if num >= 80:
+                return '#00d4aa'
+            elif num >= 60:
+                return '#fbbf24'
+            else:
+                return '#ff6b6b'
+        except:
+            return '#8892b0'
+
+    # Build score HTML cards (no leading whitespace, no blank lines mid-block)
+    score_html = '<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin: 1.5rem 0;">'
+
+    if finance:
+        score = finance.group(1)
+        color = get_color(score)
+        score_html += f'<div style="background: linear-gradient(145deg, #1a1a2e, #16213e); padding: 1.2rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); text-align: center;"><div style="color: #8892b0; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.3rem;">💰 Finance</div><div style="font-size: 2rem; font-weight: 700; color: {color};">{score}</div></div>'
+
+    if legal:
+        score = legal.group(1)
+        color = get_color(score)
+        score_html += f'<div style="background: linear-gradient(145deg, #1a1a2e, #16213e); padding: 1.2rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); text-align: center;"><div style="color: #8892b0; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.3rem;">⚖️ Legal</div><div style="font-size: 2rem; font-weight: 700; color: {color};">{score}</div></div>'
+
+    if ops:
+        score = ops.group(1)
+        color = get_color(score)
+        score_html += f'<div style="background: linear-gradient(145deg, #1a1a2e, #16213e); padding: 1.2rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); text-align: center;"><div style="color: #8892b0; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.3rem;">📋 Operations</div><div style="font-size: 2rem; font-weight: 700; color: {color};">{score}</div></div>'
+
+    if tech:
+        score = tech.group(1)
+        color = get_color(score)
+        score_html += f'<div style="background: linear-gradient(145deg, #1a1a2e, #16213e); padding: 1.2rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); text-align: center;"><div style="color: #8892b0; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.3rem;">🔧 Technical</div><div style="font-size: 2rem; font-weight: 700; color: {color};">{score}</div></div>'
+
+    score_html += '</div>'
+
+    if overall:
+        score = overall.group(1)
+        color = get_color(score)
+        score_html += f'<div style="background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 2rem; border-radius: 15px; border: 2px solid rgba(102,126,234,0.3); text-align: center; margin: 1.5rem 0;"><div style="color: #8892b0; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px;">📊 Overall Score</div><div style="font-size: 4rem; font-weight: 700; color: {color};">{score}</div></div>'
+
+    # Replace SCORING SUMMARY section entirely with the score cards
+    report = re.sub(
+        r'## 📊 SCORING SUMMARY.*?(?=##|\Z)',
+        f'## 📊 SCORING SUMMARY\n\n{score_html}\n\n',
+        report,
+        flags=re.DOTALL | re.IGNORECASE
+    )
+
+    # ============================================
+    # DECISION ITEMS (Strategic Fit / Capability / etc)
+    # ============================================
+
+    report = report.replace('Strategic Fit: Strong', '✅ Strategic Fit: Strong')
+    report = report.replace('Strategic Fit: Moderate', '⚠️ Strategic Fit: Moderate')
+    report = report.replace('Strategic Fit: Poor', '❌ Strategic Fit: Poor')
+
+    report = report.replace('Capability Alignment: Strong', '✅ Capability Alignment: Strong')
+    report = report.replace('Capability Alignment: Moderate', '⚠️ Capability Alignment: Moderate')
+    report = report.replace('Capability Alignment: Poor', '❌ Capability Alignment: Poor')
+
+    report = report.replace('Financial Viability: Viable', '✅ Financial Viability: Viable')
+    report = report.replace('Financial Viability: Needs Review', '⚠️ Financial Viability: Needs Review')
+    report = report.replace('Financial Viability: Not Viable', '❌ Financial Viability: Not Viable')
+
+    report = report.replace('Risk Assessment: Low', '✅ Risk Assessment: Low')
+    report = report.replace('Risk Assessment: Medium', '⚠️ Risk Assessment: Medium')
+    report = report.replace('Risk Assessment: High', '❌ Risk Assessment: High')
+
+# ============================================
+    # FINAL DECISION
+    # FIX: capture hyphenated values like "NO-GO" correctly
+    # ============================================
+
+    decision_match = re.search(r'Final Decision:\s*[^\w]*([\w-]+(?:\s+\w+)?)', report, re.IGNORECASE)
     if decision_match:
-        decision_section = decision_match.group(0)
+        decision = decision_match.group(1).strip().upper()
 
-        # Get real scores and decision
-        decision = scores.get('decision', 'MAYBE')
-        overall = scores.get('overall', 0)
+        if 'NO-GO' in decision or 'NO GO' in decision or 'NOGO' in decision:
+            decision_text = (
+                '\n## 🎯 FINAL RECOMMENDATION\n\n'
+                '### ❌ NO-GO\n\n'
+                '🚫 Do not pursue this proposal\n\n'
+                '📋 Next Step: Allocate resources to other opportunities\n'
+            )
+        elif 'MAYBE' in decision:
+            decision_text = (
+                '\n## 🎯 FINAL RECOMMENDATION\n\n'
+                '### ⚠️ MAYBE\n\n'
+                '🤔 Proceed with caution - need risk mitigation\n\n'
+                '📋 Next Step: Conduct further assessment and get clarifications\n'
+            )
+        elif 'GO' in decision:
+            decision_text = (
+                '\n## 🎯 FINAL RECOMMENDATION\n\n'
+                '### ✅ GO\n\n'
+                '🎯 Strongly recommend pursuing this proposal\n\n'
+                '📋 Next Step: Proceed with proposal development immediately\n'
+            )
+        else:
+            decision_text = (
+                f'\n## 🎯 FINAL RECOMMENDATION\n\n'
+                f'### ⚠️ {decision}\n\n'
+                f'🤔 Need further review\n'
+            )
 
-        # Map decision to status class
-        status_class = {
-            'GO': 'status-go',
-            'MAYBE': 'status-maybe',
-            'NO-GO': 'status-no-go'
-        }.get(decision, 'status-maybe')
+        # Remove the entire original FINAL RECOMMENDATION section (header through Final Decision line)
+        report = re.sub(
+            r'## FINAL RECOMMENDATION.*?Final Decision:.*?(?=\n\n|\Z)',
+            '',
+            report,
+            flags=re.DOTALL | re.IGNORECASE
+        )
 
-        # Replace the qualification decision with real data
-        new_decision = f"""
-## 🎯 QUALIFICATION DECISION
+        report += f'\n\n{decision_text}'
 
-**Overall Compliance Score:** {overall}%
-
-**Decision: <span class="{status_class}">{decision}</span>**
-
-**Team Scores:**
-- Finance Team: {scores.get('finance', 'N/A')}%
-- Legal Team: {scores.get('legal', 'N/A')}%
-- Operations Team: {scores.get('ops', 'N/A')}%
-- Technical Team: {scores.get('tech', 'N/A')}%
-
-**Issues:**
-{f'⚠️ **Finance Flag:** ACTION REQUIRED on Payment Terms' if scores.get('finance_flag') else '✅ No finance issues'}
-{f'❌ **Insurance NO-GO:** Insurance requirement exceeds $5M' if scores.get('insurance_no_go') else '✅ Insurance compliant'}
-
-### JUSTIFICATION
-
-[Clear 3-4 sentence explanation:
-- Key strengths identified
-- Key risks or gaps
-- What needs to happen next]
-"""
-
-        # Replace the old decision section with the new one
-        report = report.replace(decision_match.group(0), new_decision)
-
-    # ============================================
-    # ADD SCORING SUMMARY AT TOP
-    # ============================================
-
-    summary = f"""
-## 📊 COMPLIANCE SCORING SUMMARY
-
-| Team | Score | Status |
-|------|-------|--------|
-| Finance | {scores.get('finance', 'N/A')}% | {'✅' if scores.get('finance', 0) >= 70 else '⚠️' if scores.get('finance', 0) >= 50 else '❌'} |
-| Legal | {scores.get('legal', 'N/A')}% | {'✅' if scores.get('legal', 0) >= 70 else '⚠️' if scores.get('legal', 0) >= 50 else '❌'} |
-| Operations | {scores.get('ops', 'N/A')}% | {'✅' if scores.get('ops', 0) >= 70 else '⚠️' if scores.get('ops', 0) >= 50 else '❌'} |
-| Technical | {scores.get('tech', 'N/A')}% | {'✅' if scores.get('tech', 0) >= 70 else '⚠️' if scores.get('tech', 0) >= 50 else '❌'} |
-| **Overall** | **{scores.get('overall', 'N/A')}%** | **{scores.get('decision', 'MAYBE')}** |
-
----
-
-"""
-    # Insert summary after the header
-    report = report.replace('## 📋 DELIVERABLES', summary + '## 📋 DELIVERABLES')
+    # Clean up any leftover "Final Decision:" line that wasn't caught above
+    report = re.sub(r'Final Decision:.*?(?=\n|$)', '', report)
 
     # ============================================
-    # CLEANUP
+    # JUSTIFICATION
+    # FIX: also remove the leading "##" so no empty heading remains
     # ============================================
 
-    # Remove duplicate newlines
-    report = re.sub(r'\n{3,}', '\n\n', report)
+    just_match = re.search(r'##?\s*JUSTIFICATION\s*\n+(.+?)(?=\n\n|\Z)', report, re.DOTALL | re.IGNORECASE)
+    if just_match:
+        just_text = just_match.group(1).strip()
+        if just_text:
+            report = re.sub(
+                r'##?\s*JUSTIFICATION\s*\n+.+?(?=\n\n|\Z)',
+                '',
+                report,
+                flags=re.DOTALL | re.IGNORECASE
+            )
+            report += f'\n\n---\n\n## 📝 JUSTIFICATION\n\n{just_text}\n'
+
+    # ============================================
+    # FIX STATUS BADGES
+    # ============================================
+
+    report = report.replace('✅ FOUND', '<span class="status-found">✅ FOUND</span>')
+    report = report.replace('❌ NOT FOUND', '<span class="status-not-found">❌ NOT FOUND</span>')
+    report = report.replace('⚠️ ACTION REQUIRED', '<span class="status-action">⚠️ ACTION REQUIRED</span>')
+
+    # ============================================
+    # FIX DECISION COLUMN BADGES (GO / NO-GO / MAYBE)
+    # Only match inside table cells i.e. surrounded by | ... |
+    # NOTE: order matters — match NO-GO before GO so "GO" inside "NO-GO" isn't
+    # partially replaced first.
+    # ============================================
+
+    def _decision_cell(match):
+        value = match.group(1).strip().upper()
+        if 'NO-GO' in value or 'NO GO' in value:
+            return f'| <span class="decision-no-go">❌ NO-GO</span> |'
+        elif 'MAYBE' in value:
+            return f'| <span class="decision-maybe">⚠️ MAYBE</span> |'
+        elif 'GO' in value:
+            return f'| <span class="decision-go">✅ GO</span> |'
+        return match.group(0)
+
+    report = re.sub(r'\|\s*(NO-GO|NO GO|MAYBE|GO)\s*\|', _decision_cell, report, flags=re.IGNORECASE)
+
+    # ============================================
+    # STRIP LEADING WHITESPACE FROM EVERY LINE
+    # (prevents markdown from treating indented HTML as a code block)
+    # ============================================
+
+    lines = report.split('\n')
+    report = '\n'.join(line.lstrip() for line in lines)
 
     return report
 
 # =====================================================
-# MAIN APP LOGIC
+# MAIN APP
 # =====================================================
 
-if uploaded_file is not None:
-    with st.spinner("📖 Extracting text from PDF..."):
-        document_text = extract_text(uploaded_file)
+if uploaded_file:
+    st.markdown("""
+    <div class="success-box">
+        ✅ PDF Uploaded Successfully! Ready for analysis.
+    </div>
+    """, unsafe_allow_html=True)
 
-    if document_text.strip():
-        st.success(f"✅ Successfully extracted {len(document_text)} characters from PDF")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.info(f"📄 **File Name:** {uploaded_file.name}")
+    with col2:
+        st.info(f"📊 **File Size:** {round(uploaded_file.size / 1024, 2)} KB")
 
-        if st.button("🚀 Analyze RFP", type="primary", use_container_width=True):
-            with st.spinner("🧠 Analyzing with AI..."):
-                raw_report = analyze_rfp(document_text)
+    if st.button("🚀 Start Analysis", use_container_width=True):
+        with st.spinner("📖 Reading PDF document..."):
+            document_text = extract_text(uploaded_file)
 
-                if raw_report and "failed" not in raw_report.lower():
-                    formatted_report = format_report(raw_report)
+        report = analyze_rfp(document_text)
 
-                    # Display the report
-                    st.markdown("---")
-                    st.markdown("## 📊 RFP Analysis Report")
-                    st.markdown(formatted_report)
+        if report and "Analysis failed" not in report:
+            st.markdown("""
+            <div class="success-box">
+                ✅ Analysis Completed Successfully!
+            </div>
+            """, unsafe_allow_html=True)
 
-                    # Download button
-                    st.download_button(
-                        label="📥 Download Report",
-                        data=formatted_report,
-                        file_name=f"rfp_analysis_{time.strftime('%Y%m%d_%H%M%S')}.md",
-                        mime="text/markdown",
-                        use_container_width=True
-                    )
-                else:
-                    st.error("❌ Analysis failed. Please try again.")
-    else:
-        st.error("❌ No text could be extracted from the PDF. Please ensure it's a text-based PDF.")
-else:
-    st.info("📤 Please upload an RFP PDF document to begin analysis.")
+            formatted_report = format_report(report)
+
+            st.markdown("---")
+
+            st.markdown("""
+            <div class="card">
+            """, unsafe_allow_html=True)
+
+            st.markdown(formatted_report, unsafe_allow_html=True)
+
+            st.markdown("</div>", unsafe_allow_html=True)
+
+            # Only ONE Download Report button - at the bottom
+            st.download_button(
+                label="📥 Download Report",
+                data=report,
+                file_name="rfp_analysis_report.md",
+                mime="text/markdown",
+                use_container_width=True
+            )
+        else:
+            st.error("❌ Analysis failed. Please try again.")
 
 # =====================================================
 # FOOTER
 # =====================================================
 
 st.markdown("---")
-st.markdown("""
-<div style="text-align: center; color: #8892b0; padding: 1rem;">
-    <p>🚀 Powered by Gemini AI | Built with Streamlit</p>
-    <p style="font-size: 0.8rem;">© 2024 AI Proposal Capture System</p>
-</div>
-""", unsafe_allow_html=True)
-```
 
----
+st.markdown(
+    """
+    <div style="background: linear-gradient(135deg, #1a1a2e, #16213e); padding: 2rem; border-radius: 12px; margin-top: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.05); text-align: center;">
+        <div style="font-size: 1.2rem; font-weight: 600; color: #ffffff; letter-spacing: 1px; margin-bottom: 0.8rem;">◆ AI Proposal Capture System</div>
+        <div style="width: 60px; height: 2px; background: linear-gradient(90deg, #667eea, #764ba2); margin: 0.8rem auto; border-radius: 10px;"></div>
+        <div style="color: #8892b0; font-size: 0.9rem; margin: 0.5rem 0; padding: 0.2rem 0;">🔒 Powered by Google Gemini AI • Secure & Confidential</div>
+        <div style="color: #8892b0; font-size: 0.9rem; margin: 0.5rem 0; padding: 0.2rem 0;">Developed by <span style="color: #00d4aa; font-weight: 600; font-size: 1rem;">Amna Pervez</span></div>
+        <div style="width: 40px; height: 1px; background: rgba(255,255,255,0.05); margin: 0.3rem auto;"></div>
+        <div style="color: #a8b2d1; font-size: 0.85rem; margin-top: 0.05rem; padding: 0.1rem 0; letter-spacing: 0.5px; font-weight: 500;">© 2026 AI Proposal Capture System • All Rights Reserved</div>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
