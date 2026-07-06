@@ -1,4 +1,4 @@
 # .env
-GOOGLE_API_KEY= KEY_HERE
+GOOGLE_API_KEY=your_google_gemini_api_key_here
 
 
