@@ -6,7 +6,7 @@ A smart RFP (Request for Proposal) analysis tool powered by **Google Gemini AI**
 
 ## ✨ Features
 
-- ✅ Upload RFP PDF documents
+- ✅ Upload RFP PDF document
 - ✅ AI-powered analysis with Google Gemini
 - ✅ **Finance team** checklist (Payment terms, Insurance, Financial stability, Profitability, Bid bond)
 - ✅ **Legal team** checklist (Eligibility, Capability, Data protection, Contractual obligations, State registration, E-Verify)
