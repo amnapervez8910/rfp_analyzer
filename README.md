@@ -1,110 +1,110 @@
 # 📄 AI Proposal Capture System
 
-A smart RFP (Request for Proposal) analysis tool powered by **Google Gemini AI**. Upload an RFP PDF and get back a full compliance breakdown, department-wise scoring, and a clear **GO / NO-GO / MAYBE** recommendation — in seconds.
+An AI-powered RFP analysis application built with **Streamlit** and **Google Gemini AI**. It helps teams analyze one or multiple Request for Proposal (RFP) documents, extract important requirements, evaluate departmental compliance, and make informed **GO / NO-GO / MAYBE** decisions.
 
 ---
 
 ## ✨ Features
 
-- ✅ Upload RFP PDF document
-- ✅ AI-powered analysis with Google Gemini
-- ✅ **Finance team** checklist (Payment terms, Insurance, Financial stability, Profitability, Bid bond)
-- ✅ **Legal team** checklist (Eligibility, Capability, Data protection, Contractual obligations, State registration, E-Verify)
-- ✅ **Operations team** checklist (Forms, Deadlines, Document compliance, Signatory authority)
-- ✅ **Technical team** checklist (Scope alignment, Requirements, Standards, Security, Integration)
-- ✅ Department-wise scoring system
-- ✅ Automatic GO / NO-GO / MAYBE recommendation
-- ✅ Session history — review any previously analyzed RFP
-- ✅ Export full reports in Markdown format
+- 📤 Upload one or multiple RFP documents in PDF format
+- 🤖 Analyze RFP content using Google Gemini AI
+- 📋 Extract key deliverables and submission requirements
+- ⚖️ Identify evaluation criteria and scoring details
+- 💰 Generate a Finance team compliance checklist
+- ⚖️ Generate a Legal team compliance checklist
+- ⚙️ Generate an Operations team compliance checklist
+- 💻 Generate a Technical team compliance checklist
+- 📊 Provide department-wise compliance scores
+- 🚦 Generate a GO / NO-GO / MAYBE recommendation
+- 🕒 Save and review previous analyses through the History tab
+- 📝 Export complete analysis reports in Markdown format
+- 🎨 Provide a clean, responsive, and user-friendly interface
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Component | Purpose |
+| Technology | Purpose |
 |---|---|
-| [Streamlit](https://streamlit.io/) | Web app framework / UI |
+| [Python](https://www.python.org/) | Core programming language |
+| [Streamlit](https://streamlit.io/) | Web application framework and user interface |
+| [Google Gemini AI](https://ai.google.dev/) | AI-powered RFP analysis and recommendations |
 | [PyPDF](https://pypi.org/project/pypdf/) | PDF text extraction |
-| [Google Gemini AI](https://ai.google.dev/) | Document analysis engine |
-| [python-dotenv](https://pypi.org/project/python-dotenv/) | Loads the API key from `.env` |
+| [python-dotenv](https://pypi.org/project/python-dotenv/) | Secure environment variable management |
+| HTML & CSS | Custom styling and visual components |
 
 ---
 
-
 ## 📦 Installation
 
-Install the required Python packages:
+Clone the repository and install the required packages:
 
 ```bash
+git clone https://github.com/amnapervez8910/rfp_analyzer.git
+cd rfp_analyzer
 pip install streamlit pypdf google-generativeai python-dotenv
 ```
 
 ---
 
-## 🔑 Setup: API Key
+## 🔑 Gemini API Key Setup
 
-1. Get a free Gemini API key from **[Google AI Studio](https://aistudio.google.com/app/apikey)**.
-2. In the project's root folder, create a file named **`.env`**.
-3. Add your key like this:
+1. Get a Gemini API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
+2. Create a `.env` file in the main project folder.
+3. Add your API key:
 
-```dotenv
+```env
 GOOGLE_API_KEY=your_google_gemini_api_key_here
 ```
 
-> The app reads this key automatically at startup via `python-dotenv`. If the key is missing, the app will show an error and stop.
+If the API key is missing, the application will display an error message and stop automatically.
 
 ---
 
-## 🚀 Run the App
+## 🚀 Run the Application
 
-From the project folder, run:
+Run the following command from the project folder:
 
 ```bash
 streamlit run app.py
 ```
 
-Then open the local URL Streamlit gives you (usually `http://localhost:8501`) in your browser.
+The application will usually open automatically in your browser. If it does not, visit:
+
+```text
+http://localhost:8501
+```
 
 ---
 
-## 🎯 How It Works
+## 📖 How to Use
 
-1. **Upload** your RFP PDF in the "New Analysis" tab.
-2. The app **reads and extracts text** from every page of the document.
-3. **Gemini AI analyzes** the RFP against a fixed, detailed checklist — covering Finance, Legal, Operations, and Technical criteria.
-4. You get a **detailed compliance report** with a Status (Found / Not Found / Action Required) and a Decision (GO / NO-GO / MAYBE) for every checklist item.
-5. Scores are calculated **directly from the Decision columns** (not trusted from the AI's own math), guaranteeing the numbers are always internally consistent.
-6. You receive a **final recommendation** with a clear, specific justification — and can download the full report or revisit it later in **History**.
-
----
-
-## 📊 Scoring System
-
-Each checklist item is scored as:
-
-| Decision | Points |
-|---|---|
-| ✅ GO | 1.0 |
-| ⚠️ MAYBE | 0.5 |
-| ❌ NO-GO | 0.0 |
-
-Each team's score = `(sum of points) / (total items) × 100`
-**Overall Score** = average of all four team scores (Finance, Legal, Operations, Technical).
-
-### Final Decision Rules
-
-| Condition | Decision |
-|---|---|
-| Overall score **≥ 80%** AND every Finance-team item = GO | ✅ **GO** |
-| Any single flag exists (e.g. insurance over the cap, non-standard payment terms) — even with a high overall score | ⚠️ **MAYBE** |
-| Overall score **< 60%** | ❌ **NO-GO** |
+1. Open the application in your browser.
+2. Go to the **New Analysis** tab.
+3. Upload one or multiple RFP documents in PDF format.
+4. Start the AI analysis and wait for the documents to be processed.
+5. Review the extracted deliverables, evaluation criteria, departmental checklists, scores, and final recommendation.
+6. Open the **History** tab to review previously saved analyses.
 
 ---
 
-## 📄 License
+## 🚦 Decision Intelligence
 
-All Rights Reserved.
+The system reviews the extracted requirements, compliance status, departmental scores, risks, and missing information to provide one of the following recommendations:
+
+- **GO** — The opportunity is suitable and the major requirements can be fulfilled.
+- **NO-GO** — Critical requirements, risks, or compliance issues make the opportunity unsuitable.
+- **MAYBE** — The opportunity requires further review because some information or approvals are still needed.
 
 ---
 
-**Made by Amna Pervez**
+## 🔒 Security and Privacy
+
+- The Gemini API key is loaded securely from environment variables.
+- RFP documents may contain confidential business information, so they should be handled carefully.
+- Do not expose API credentials or upload the `.env` file to a public repository.
+- Review AI-generated results before making a final business or bidding decision.
+
+---
+
+
