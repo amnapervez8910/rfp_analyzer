@@ -30,16 +30,6 @@ A smart RFP (Request for Proposal) analysis tool powered by **Google Gemini AI**
 
 ---
 
-## 📁 Project Structure
-
-```
-proposal-capture-system/
-├── app.py          # Main application (Streamlit + Gemini logic)
-├── style.css       # Custom UI styling
-├── .env            # Your API key (create this yourself, not committed)
-```
-
----
 
 ## 📦 Installation
 
