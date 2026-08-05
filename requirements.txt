@@ -1,0 +1,9 @@
+streamlit
+pypdf
+google-generativeai
+google-api-core
+python-dotenv
+xhtml2pdf
+markdown
+fastapi
+uvicorn
