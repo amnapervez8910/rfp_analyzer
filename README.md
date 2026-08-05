@@ -114,16 +114,14 @@ A MAYBE counts as half credit, not zero. The **Overall Score** is then the plain
 | 3 | Score ≥ 80% & Finance = GO | ✅ GO |
 | 4 | Otherwise | ⚠️ MAYBE |
 
-> Deadline validation only trusts explicit calendar dates shared by 2+ mandatory deliverables — vague wording like "TBD" is ignored so it never guesses.
+**Deadline validation process**
 
-**How the deadline timeline is actually checked:**
-
-1. Every deliverable marked **Mandatory** is scanned for a deadline.
-2. Only an **explicit calendar date** counts (e.g. `2026-08-13`, `August 13, 2026`) — relative or vague phrasing ("TBD", "within 30 days of notice", "conditional") is ignored on purpose.
-3. If **2 or more Mandatory deliverables share the exact same date**, that date is treated as the RFP's **primary bid-submission deadline**.
-4. That date is compared against **today's actual date**. If it's already in the past, `deadline_overdue = True` is set.
-5. This flag overrides every other rule — even a 100% compliance score still results in **NO-GO**, and the written Justification is required to lead with the deadline as the reason.
-6. If an **addendum** later extends that same deadline, the new date is what gets checked on re-analysis — so a NO-GO caused by an expired date can flip back to GO/MAYBE once the addendum pushes it forward.
+1. Scan all **Mandatory** deliverables for explicit calendar dates.
+2. Ignore vague or relative deadlines (e.g., "TBD", "within 30 days").
+3. If **2+ mandatory deliverables** share the same explicit date, treat it as the official bid deadline.
+4. Compare that date with the current date.
+5. If the deadline has passed, the final verdict is **automatically NO-GO**, regardless of the compliance score.
+6. When an addendum updates the deadline, the new date is used during re-analysis and the recommendation is recalculated.
 
 ---
 
@@ -146,7 +144,7 @@ Every uploaded set of PDFs is SHA-256 hashed. If you upload the **exact same fil
 
 ---
 
-# 📂 Project Structure — what each file does
+# 📂 Project Structure 
 
 ```text
 AI-Proposal-Capture-System/
