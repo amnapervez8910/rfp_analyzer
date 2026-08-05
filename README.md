@@ -116,8 +116,6 @@ A MAYBE counts as half credit, not zero. The **Overall Score** is then the plain
 
 > Deadline validation only trusts explicit calendar dates shared by 2+ mandatory deliverables — vague wording like "TBD" is ignored so it never guesses.
 
-If the AI's own Justification text quotes a different score or decision word than what was actually computed, the app silently rewrites just that phrase to match — so the numbers shown can never contradict the written explanation.
-
 ---
 
 # 🔄 Addendum Support
@@ -232,8 +230,6 @@ streamlit run app.py
 ---
 
 <div align="center">
-
-### Built by **Amna Pervez**
 
 **AI Proposal Capture System • Google Gemini • Streamlit • FastAPI**
 
