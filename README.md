@@ -17,9 +17,6 @@ An AI-powered RFP analysis application built with **Streamlit** and **Google Gem
 - 📊 Provide department-wise compliance scores
 - 🚦 Generate a GO / NO-GO / MAYBE recommendation
 - 🕒 Save and review previous analyses through the History tab
-- 📝 Export complete analysis reports in Markdown format
-- 🎨 Provide a clean, responsive, and user-friendly interface
-
 ---
 
 ## 🛠️ Tech Stack
