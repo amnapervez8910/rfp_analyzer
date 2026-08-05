@@ -116,6 +116,15 @@ A MAYBE counts as half credit, not zero. The **Overall Score** is then the plain
 
 > Deadline validation only trusts explicit calendar dates shared by 2+ mandatory deliverables — vague wording like "TBD" is ignored so it never guesses.
 
+**How the deadline timeline is actually checked:**
+
+1. Every deliverable marked **Mandatory** is scanned for a deadline.
+2. Only an **explicit calendar date** counts (e.g. `2026-08-13`, `August 13, 2026`) — relative or vague phrasing ("TBD", "within 30 days of notice", "conditional") is ignored on purpose.
+3. If **2 or more Mandatory deliverables share the exact same date**, that date is treated as the RFP's **primary bid-submission deadline**.
+4. That date is compared against **today's actual date**. If it's already in the past, `deadline_overdue = True` is set.
+5. This flag overrides every other rule — even a 100% compliance score still results in **NO-GO**, and the written Justification is required to lead with the deadline as the reason.
+6. If an **addendum** later extends that same deadline, the new date is what gets checked on re-analysis — so a NO-GO caused by an expired date can flip back to GO/MAYBE once the addendum pushes it forward.
+
 ---
 
 # 🔄 Addendum Support
@@ -137,7 +146,7 @@ Every uploaded set of PDFs is SHA-256 hashed. If you upload the **exact same fil
 
 ---
 
-# 📂 Project Structure
+# 📂 Project Structure — what each file does
 
 ```text
 AI-Proposal-Capture-System/
