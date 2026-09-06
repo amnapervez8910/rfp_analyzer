@@ -28,10 +28,12 @@ AI-powered platform that transforms lengthy Request for Proposal (RFP) documents
 - 📊 Deterministic GO / MAYBE / NO-GO Decision
 - 🔍 AI Verification Against Source Document
 - 🔄 Addendum & Version Management
+- ♻️ Duplicate Upload Detection (SHA-256)
 - 📅 Calendar (.ics) Generation
-- 📑 Professional PDF Reports
+- 📑 PDF Reports
 - 📦 JSON Export
 - 🗂 Analysis History
+- 🔌 Optional FastAPI Endpoint (local use)
 
 ---
 
@@ -45,7 +47,7 @@ AI-powered platform that transforms lengthy Request for Proposal (RFP) documents
 | **`gemini-3.6-flash`** | Decision Narrative |
 | **`gemini-3.6-flash`** | Report Verification |
 
-All models run with **temperature = 0** to ensure deterministic and consistent outputs.
+All models run with **temperature = 0** to keep outputs consistent.
 
 > The Evaluation, Compliance, Decision, and Verification steps all currently use the same `gemini-3.6-flash` model (kept as separate `fast` / `pro` slots internally for future flexibility) — only the Deliverables step uses the lighter `gemini-3.5-flash-lite` model.
 
@@ -144,22 +146,23 @@ Every uploaded set of PDFs is SHA-256 hashed. If you upload the **exact same fil
 
 ---
 
-# 📂 Project Structure 
+# 📂 Project Structure
 
 ```text
-AI-Proposal-Capture-System/
+rfp_analyzer/
 │
 ├── app.py                    → Streamlit entry point — page setup, feature cards,
 │                                 wires the New Analysis + History tabs together
-├── api.py                    → FastAPI server — returns a saved (or freshly run)
-│                                 analysis as JSON, by RFP ID
+├── api.py                    → Optional FastAPI server (local use only) — returns
+│                                 a saved (or freshly run) analysis as JSON, by RFP ID
 ├── rfp_core.py                → Headless copy of the full analysis pipeline
 │                                 (prompts + orchestration), used only by api.py
 ├── rfp_json_formatter.py      → Converts the raw markdown report into a clean,
 │                                 structured JSON dict (deliverables/evaluation/
 │                                 checklist/scoring/decision as separate keys)
 ├── requirements.txt           → Python dependencies
-├── rfp_results.db             → SQLite DB shared between the app and the API
+├── .env.example                → Template for your local .env file
+├── .gitignore                  → Excludes secrets, DB, history, and cache from Git
 │
 ├── modules/
 │   ├── analysis.py            → The REAL pipeline the app runs: deliverables,
@@ -167,7 +170,7 @@ AI-Proposal-Capture-System/
 │   │                              verification, addendum re-analysis, one-click fixes
 │   ├── config.py               → Sets up Gemini + defines which model each step uses
 │   ├── exports.py              → Builds the downloadable PDF, JSON, and .ics files;
-│   │                              also reads/writes the shared SQLite DB
+│   │                              also reads/writes the local SQLite DB
 │   ├── history.py              → Hashes uploaded files (skips re-analysis on repeat
 │   │                              uploads), generates RFP IDs, saves history to disk
 │   ├── history_ui.py           → "History" tab UI — past analyses + addendum upload
@@ -180,14 +183,15 @@ AI-Proposal-Capture-System/
 └── README.md
 ```
 
+> `rfp_results.db`, `rfp_history_store.json`, uploaded PDFs, and `__pycache__` are all created at runtime and are excluded via `.gitignore`.
 ---
 
 # 🚀 Installation
 
 ```bash
-git clone https://github.com/yourusername/AI-Proposal-Capture-System.git
+git clone https://github.com/amnapervez8910/rfp_analyzer.git
 
-cd AI-Proposal-Capture-System
+cd rfp_analyzer
 
 python -m venv venv
 
@@ -200,13 +204,19 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Create a `.env` file:
+Copy the example env file and add your key:
+
+```bash
+# Windows
+copy .env.example .env
+
+# Linux / macOS
+cp .env.example .env
+```
 
 ```env
 GOOGLE_API_KEY=YOUR_API_KEY
 ```
-
-> The model names (`gemini-3.6-flash`, `gemini-3.5-flash-lite`) are set directly in `modules/config.py` / `rfp_core.py`, not via environment variables — only the API key is read from `.env`.
 
 Run the application:
 
@@ -214,6 +224,11 @@ Run the application:
 streamlit run app.py
 ```
 
+### 🔌 Optional: run the local API
+
+```bash
+uvicorn api:app --reload --port 8000
+```
 ---
 
 # 📤 Export Formats
@@ -229,10 +244,11 @@ streamlit run app.py
 
 - Python
 - Streamlit
-- FastAPI
+- FastAPI + Uvicorn
 - Google Gemini AI
 - SQLite
 - pypdf
+- xhtml2pdf
 
 ---
 
