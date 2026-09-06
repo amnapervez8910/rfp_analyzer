@@ -1,0 +1,27 @@
+# Secrets
+.env
+keys.txt
+*.key
+
+# Python-generated files
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Private/runtime data
+rfp_results.db
+rfp_history_store.json
+rfp_api_cache/
+rfp_documents/
+*.pdf
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
